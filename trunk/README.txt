@@ -1,1 +1,1 @@
-To je branch. Tukaj bo zadnja verzija igre.
+To je trunk. Tukaj bo trenutna delujoèa verzija.
