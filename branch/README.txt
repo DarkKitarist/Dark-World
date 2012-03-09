@@ -1,0 +1,1 @@
+To je branch. Tukaj bo zadnja verzija igre.
