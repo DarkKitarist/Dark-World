@@ -522,8 +522,8 @@ template container Panel(SdkTrays/Logo)
 	metrics_mode pixels
 	material SdkTrays/Logo
 	horz_align center
-	width 128
-	height 53
+	width 463
+	height 256
 }
 
 template container Panel(SdkTrays/DarkLogo)
