@@ -1,1 +1,26 @@
-Predpriprava za 4 teden.
+V Datoteki Slike se nahajajo:
+	-Koncept za GUI za menij za izbiro glavnega karakterja
+	-Konèni izgled
+	-Zaèetek glavne površine in prvi pogled
+	
+Datoteke, ki sem naredil na novo:
+	-darkMainSinglePlayer.cpp
+	-darkMainSinglePlayer.h
+	-darkCharrSelectMenu.cpp
+	-darkCharrSelectMenu.h
+	
+Datoteke, ki sem jih spremenil:
+	-darkMainApp.cpp
+	-darkMainApp.h
+	-darkMainMenu.cpp
+	-darkMainMenu.h
+	
+Datoteke, ki sem jih uvozil iz prejšnjega prejšnjega projekta in jih prilagodil za mojega:
+	-darkCharacter.cpp
+	-darkCharacter.h
+	-darkCharacter.cpp
+	-darkCharacter.h
+	-HelperLogics.cpp
+	-HelperLogics.h
+	-darkThirdPersonCamera.cpp
+	-darkThirdPersonCamera.h
