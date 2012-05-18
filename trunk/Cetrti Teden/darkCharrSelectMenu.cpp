@@ -6,6 +6,7 @@
 using namespace std;
 using namespace Ogre;
  
+//inicializacije
 darkCharrSelectMenu::darkCharrSelectMenu()
 {
     m_MoveSpeed			= 0.1f;
@@ -25,7 +26,7 @@ darkCharrSelectMenu::darkCharrSelectMenu()
 	m_CharSelected		= false;
 	m_bQuestionActive	= false;
 	m_useOldProfile		= false;
-
+//za izbiro 3 možnih modelov za igranje
 	m_OgreSelected		= false;
 	m_NinjaSelected		= false;
 	m_RobotSelected		= false;
@@ -34,7 +35,9 @@ darkCharrSelectMenu::darkCharrSelectMenu()
 
     m_pDetailsPanel		= 0;
 }
- 
+
+//ta funkcija prebere naše izbire iz dokumenta in nas vpraša, èe želimo te izbire uporabiti
+//prav tako se te izbire prenesejo na igralno površino
 void darkCharrSelectMenu::populateProfile()
 {
 	int numLines = 0, wakawaka = 0;
@@ -60,6 +63,7 @@ void darkCharrSelectMenu::populateProfile()
 	wakawaka = profileRead[4].find_first_of(':') + 1;
 	CharAttack = profileRead[4].substr(wakawaka, profileRead[4].length());
 
+	//ce je karakter Ogre se nastavijo te nastavitve
 	if(CharType == "Ogre")
 	{
 		m_pCurrentObject = m_pOgreHeadNode;
@@ -75,6 +79,8 @@ void darkCharrSelectMenu::populateProfile()
 		m_CharSelected = true;
 		m_nameSelected = true;
 	}
+
+	//ce je karakter Ninja se nastavijo te nastavitve
 	else if(CharType == "Ninja")
 	{
 		m_pCurrentObject1 = m_pNinjaNode;
@@ -90,6 +96,8 @@ void darkCharrSelectMenu::populateProfile()
 		m_CharSelected = true;
 		m_nameSelected = true;
 	}
+
+	//ce je karakter Robot se nastavijo te nastavitve
 	else if(CharType == "Robot")
 	{
 		m_pCurrentObject2 = m_pRobotNode;
@@ -107,11 +115,15 @@ void darkCharrSelectMenu::populateProfile()
 	}
 }
  
+//tukaj se nalozijo zvokovi in razne druge stvari, ki so potrebne na zaèetku
 void darkCharrSelectMenu::enter()
 {
 	engine2 = irrklang::createIrrKlangDevice();
+	//ambient zvok
 	engine2->play2D("media/darkMedia/Sounds/fire-1.mp3", true);
 	int numLines = 0;
+
+	//beremo iz dokumenta, ki vsebuje profil
 	ifstream myfile("profile.dark");
 	if(myfile.is_open())
 	{
@@ -122,7 +134,7 @@ void darkCharrSelectMenu::enter()
 		}
 	}
 	myfile.close();
-
+	//ce je dokument z profilom prazen, pomeni, da se profil ni ustvarjen
 	if(numLines > 0)
     {
 		OgreFramework::getSingletonPtr()->m_pTrayMgr->showYesNoDialog("Create new profile?", "An old profile has been detected\n\nPress YES to create new profile.\nPress NO to use old one.\n\n!!Old Profile will be deleted if NEW is created!!");
@@ -133,7 +145,7 @@ void darkCharrSelectMenu::enter()
  
     m_pSceneMgr = OgreFramework::getSingletonPtr()->m_pRoot->createSceneManager(ST_GENERIC, "GameSceneMgr");
 	
-
+	//tukaj se nalozi kamera
 	OgreFramework::getSingletonPtr()->m_pTrayMgr->hideBackdrop();
     m_pCamera = m_pSceneMgr->createCamera("GameCamera");
     m_pCamera->setPosition(Vector3(0, 0, 5));
@@ -152,6 +164,7 @@ void darkCharrSelectMenu::enter()
     createScene();
 }
 
+//tukaj izgradimo GUI za izbiro karakterja
 void darkCharrSelectMenu::buildGUI()
 {
 	OgreFramework::getSingletonPtr()->m_pTrayMgr->createLabel(OgreBites::TL_TOP, "GameLb2", "Singleplayer Menu", 200);
@@ -195,17 +208,20 @@ void darkCharrSelectMenu::buildGUI()
 	m_StartGameButton->hide();
 }
 
+//genericna funkcija
 void darkCharrSelectMenu::enter(Config cfg)
 {
 	enter();
 }
 
+//prototip za PAUSE menu
 bool darkCharrSelectMenu::pause()
 {
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Pausing GameState...");
     return true;
 }
 
+//prototip za Resume, ki se bo uporabil ko bo delal PAUSE menu
 void darkCharrSelectMenu::resume()
 {
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Resuming GameState...");
@@ -215,6 +231,7 @@ void darkCharrSelectMenu::resume()
     m_bQuit = false;
 }
 
+//funkcija za izhod
 void darkCharrSelectMenu::exit()
 {
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Leaving GameState...");
@@ -227,6 +244,7 @@ void darkCharrSelectMenu::exit()
         OgreFramework::getSingletonPtr()->m_pRoot->destroySceneManager(m_pSceneMgr);
 }
 
+//funkcija, ki ustvari vse 3D modele od katerih je samo Ogre viden na zacetku
 void darkCharrSelectMenu::createScene()
 {
 	CharAttack = "Idle";
@@ -236,19 +254,20 @@ void darkCharrSelectMenu::createScene()
 	l->setPosition(10,10,20);
     l->setType(Light::LT_DIRECTIONAL);
     l->setDirection(1, -1, 0);
-  
+	//glavni node sveta
 	Ogre::SceneNode *MainNode = m_pSceneMgr->getRootSceneNode()->createChildSceneNode("MainWorldNode", Ogre::Vector3 (0, -60, -250));
 	Ogre::ParticleSystem* partSystem = m_pSceneMgr->createParticleSystem("Smoke", "Examples/Smoke");
-
+	//efekt ognja v ozadju
 	MainNode->attachObject(partSystem);
 
+	//tukaj se nalozi Ogre model
     m_pOgreHeadEntity = m_pSceneMgr->createEntity("Ogre", "Sinbad.mesh");
     m_pOgreHeadNode = m_pSceneMgr->getRootSceneNode()->createChildSceneNode("SinbadNode");
     m_pOgreHeadNode->attachObject(m_pOgreHeadEntity);
     m_pOgreHeadNode->setPosition(Vector3(2, 0, -9));
 	m_pOgreHeadNode->setVisible(true);
  
-
+	//tukaj se vzpostavijo animacije
 	m_animStateOgre = m_pOgreHeadEntity->getAnimationState("IdleBase");
 	m_animStateOgre1= m_pOgreHeadEntity->getAnimationState("IdleTop");
 	m_animStateOgre->setEnabled(true);
@@ -262,7 +281,7 @@ void darkCharrSelectMenu::createScene()
 	m_pOgreHeadEntity->attachObjectToBone("Sheath.R", mSword2);
 
 
-
+	//tukaj se nalozi Ninja model
 	m_pNinjaEntity = m_pSceneMgr->createEntity("Ninja", "Ninja.mesh");
     m_pNinjaNode = m_pSceneMgr->getRootSceneNode()->createChildSceneNode("NinjaNode");
     m_pNinjaNode->attachObject(m_pNinjaEntity);
@@ -271,6 +290,7 @@ void darkCharrSelectMenu::createScene()
     m_pNinjaNode->setPosition(Vector3(2, -4, -7));
 	m_pNinjaNode->setVisible(false);
  
+	//tukaj se vzpostavijo animacije
 	m_animStateNinja = m_pNinjaEntity->getAnimationState("Idle3");
 	m_animStateNinja->setEnabled(true);
 	m_animStateNinja->setLoop(true);
@@ -284,6 +304,7 @@ void darkCharrSelectMenu::createScene()
 		std::cout<<iter.getNext()->getAnimationName()<<std::endl;
 	}
 
+	//tukaj se nalozi Robot 
 	m_pRobotEntity = m_pSceneMgr->createEntity("Robot", "robot.mesh");
     m_pRobotNode = m_pSceneMgr->getRootSceneNode()->createChildSceneNode("RobotNode");
     m_pRobotNode->attachObject(m_pRobotEntity);
@@ -292,6 +313,7 @@ void darkCharrSelectMenu::createScene()
     m_pRobotNode->setPosition(Vector3(2, -5, -9));
 	m_pRobotNode->setVisible(false);
 
+	//tukaj se vzpostavijo animacije za Robot-a
 	m_animStateRobot = m_pRobotEntity->getAnimationState("Idle");
 	m_animStateRobot->setEnabled(true);
 	m_animStateRobot->setLoop(true);
@@ -305,10 +327,12 @@ void darkCharrSelectMenu::createScene()
 		std::cout<<iter1.getNext()->getAnimationName()<<std::endl;
 	}
 
+	//tukaj se nastavijo sence
 	m_pSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
 	m_pSceneMgr->setSkyBox(true, "Examples/CloudyNoonSkyBox", 8000, true);
 }
 
+//moral sem ustvariti funkcijo,ki lovi iz tipkovnice znake in jih izpise na ekran
 bool darkCharrSelectMenu::keyPressed(const OIS::KeyEvent &keyEventRef)
 {
     if(m_bSettingsMode == true)
@@ -467,12 +491,14 @@ bool darkCharrSelectMenu::keyPressed(const OIS::KeyEvent &keyEventRef)
     return true;
 }
 
+//dedovana funkcija za lovenje spusta tipke
 bool darkCharrSelectMenu::keyReleased(const OIS::KeyEvent &keyEventRef)
 {
     OgreFramework::getSingletonPtr()->keyPressed(keyEventRef);
     return true;
 }
 
+//funkcija, ki lovi premike miske
 bool darkCharrSelectMenu::mouseMoved(const OIS::MouseEvent &evt)
 {
     if(OgreFramework::getSingletonPtr()->m_pTrayMgr->injectMouseMove(evt)) return true;
@@ -485,6 +511,7 @@ bool darkCharrSelectMenu::mouseMoved(const OIS::MouseEvent &evt)
     return true;
 }
 
+//funkcija, ki lovi, ce je bil miskin gumb stisnjen
 bool darkCharrSelectMenu::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
 {
     if(OgreFramework::getSingletonPtr()->m_pTrayMgr->injectMouseDown(evt, id)) return true;
@@ -501,6 +528,7 @@ bool darkCharrSelectMenu::mousePressed(const OIS::MouseEvent &evt, OIS::MouseBut
     return true;
 }
 
+//funkcija, ki lovi, ce je bil miskin gumb spuscen 
 bool darkCharrSelectMenu::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
 {
     if(OgreFramework::getSingletonPtr()->m_pTrayMgr->injectMouseUp(evt, id)) return true;
@@ -517,11 +545,13 @@ bool darkCharrSelectMenu::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseBu
     return true;
 }
 
+//funkcija za stisk levega gumba na miski, ki sem jo uporabljal samo za teste
 void darkCharrSelectMenu::onLeftPressed(const OIS::MouseEvent &evt)
 {
 
 }
 
+//funkcija za premik kamere, ki sem jo uporabljal samo za test
 void darkCharrSelectMenu::moveCamera()
 {
     if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_LSHIFT))
@@ -529,6 +559,7 @@ void darkCharrSelectMenu::moveCamera()
     m_pCamera->moveRelative(m_TranslateVector / 10);
 }
 
+//funkcija za pridobivanje vnosov
 void darkCharrSelectMenu::getInput()
 {
     if(m_bSettingsMode == false)
@@ -536,6 +567,7 @@ void darkCharrSelectMenu::getInput()
     }
 }
 
+//funkcija, ki skrbi, da se vsako sekundo izrise 60 frejmov oz. kolko mamo nastavljeno
 void darkCharrSelectMenu::update(double timeSinceLastFrame)
 {
     m_FrameEvent.timeSinceLastFrame = timeSinceLastFrame;
@@ -546,6 +578,7 @@ void darkCharrSelectMenu::update(double timeSinceLastFrame)
         popAppState();
         return;
     }
+	//casovi za animacije
 	m_animStateOgre->addTime(timeSinceLastFrame/1000);
 	m_animStateOgre1->addTime(timeSinceLastFrame/1000);
 	m_animStateNinja->addTime(timeSinceLastFrame/1000);
@@ -581,6 +614,8 @@ void darkCharrSelectMenu::update(double timeSinceLastFrame)
     moveCamera();
 }
 
+//funkcija, ki se izvede ko uporabnik konca z izborom
+//v tej funkciji se prav tako ustvari dokument s profilom
 void darkCharrSelectMenu::buttonHit(OgreBites::Button *button)
 {
 	int numLines = 0;
@@ -612,6 +647,7 @@ void darkCharrSelectMenu::buttonHit(OgreBites::Button *button)
 	}
 }
 
+//funkcija za dialog box za profil
 void darkCharrSelectMenu::yesNoDialogClosed(const Ogre::DisplayString& question, bool yesHit)
 {
     if(yesHit == true)
@@ -629,6 +665,7 @@ void darkCharrSelectMenu::yesNoDialogClosed(const Ogre::DisplayString& question,
 	}
 }
 
+//funkcija z switch stavki, ki so vezani na dropdown sezname, kar izberemo se preslika na switch stavek
 void darkCharrSelectMenu::itemSelected(OgreBites::SelectMenu* menu)
 {
     switch(m_selectRace->getSelectionIndex())

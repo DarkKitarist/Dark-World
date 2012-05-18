@@ -11,7 +11,7 @@ public:
 	darkCharrSelectMenu();
  
 	DECLARE_APPSTATE_CLASS(darkCharrSelectMenu)
- 
+ //funkcije
 	void enter();
 	void enter(Config cfg);
 	void createScene();
@@ -35,6 +35,7 @@ public:
 	void update(double timeSinceLastFrame);
  
 private:
+	//inits
 	irrklang::ISoundEngine* engine2;
 	Ogre::StringVector chatModes;
 	Ogre::StringVector basicAttack;
